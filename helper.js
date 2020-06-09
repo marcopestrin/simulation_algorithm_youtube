@@ -6,6 +6,7 @@ const { Video } = require("./model");
 mongoose.connect('mongodb://localhost:27017/'+global.DATABASE_NAME, {useNewUrlParser: true});
 
 module.exports = class Helper {
+
   async getIdAuthor(idVideo) {
     // ritorno l'identificativo del canale del video
     let fieldsToReturn = {
@@ -15,7 +16,7 @@ module.exports = class Helper {
     let query = {
       id: idVideo
     }
-    var ricercaAutore = new Promise((resolve, reject) => {
+    var findAuthor = new Promise((resolve, reject) => {
       Video.findOne(query, fieldsToReturn, (err, res) => {
         if (res){
           resolve(res.author)
@@ -24,7 +25,28 @@ module.exports = class Helper {
         }
       })
     })
-    await ricercaAutore
-    return ricercaAutore
+    return await findAuthor
   }
+
+  async getIdCategory(idVideo) {
+    // ritorno l'identificativo della categoria del video
+    let fieldsToReturn = {
+      category: true,
+      _id: false
+    }
+    let query = {
+      id: idVideo
+    }
+    var findCategory = new Promise((resolve, reject) => {
+      Video.findOne(query, fieldsToReturn, (err, res) => {
+        if (res){
+          resolve(res.category)
+        } else {
+          reject(true)
+        }
+      })
+    })
+    return await findCategory
+  }
+
 }
