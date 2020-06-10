@@ -18,7 +18,7 @@ const videoModel = new Schema({
 
 const userModel = new Schema({
   id: { type: String, required: true },
-  favouritesCategory: { type: Array, required: true },
+  favouriteCategories: { type: Array, required: true },
   likedVideos: {type: Array, default:[]},
   sharedVideos: {type: Array, default:[]},
   commentedVideos: {type: Array, default:[]},

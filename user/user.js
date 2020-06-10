@@ -65,7 +65,7 @@ class UserClass {
     // controllo se questo utente ha già guardato un video di questa categoria
     let query = { id: idUser }
     let fieldsToReturn = {
-      favouritesCategory: true
+      favouriteCategories: true
     }
     let categoryExist
     var findCategory = new Promise((resolve, reject) => {
@@ -73,7 +73,7 @@ class UserClass {
         if(err) {
           console.log(err)
         } else {
-          categoryExist = this.categoryExist(res.favouritesCategory, category)
+          categoryExist = this.categoryExist(res.favouriteCategories, category)
         }
         resolve(true)
       })
@@ -82,35 +82,48 @@ class UserClass {
     return categoryExist
   }
   
-  getDurationVideo(){
-    return 43432
-  }
-
-  async addImpactCategory(category, idUser){
+  async addImpactCategory(category, idUser, idVideo){
     let set, newData, filter
+    let duration = await helper.getDurationVideo(idVideo)
+    let impact =  duration * global.WEIGHT_TIME_WATCH_IN_BEST_CAT
     let query = { id: idUser }
-    let impact = this.getDurationVideo() * global.WEIGHT_TIME_WATCH_IN_BEST_CAT
     if(await this.categoryAlreadyWatched(category, idUser)) {
       // vado ad incrementare l'interesse verso questa categoria
       set = { $inc: {
-        "favouritesCategory.$[el].impact": impact
+        "favouriteCategories.$[el].impact": impact
       }}
       filter = { arrayFilters: [
         { "el.category": parseInt(category) }
       ]}
     } else {
-      // l'utente è neofita di quetsa categoria di video
+      // l'utente è neofita di questa categoria di video
       newData = { category, impact }
       set = { $push: {
-        favouritesCategory: newData
+        favouriteCategories: newData
       }}
     }
     User.updateOne(query, set, filter, (err, res) => {
       if(err) {
         console.log(err)
       } else {
-        console.log(res)
+        // ordino le categorie per il loro valore d'impatto sull'utente
+        this.sortCategoryByImpact(idUser)
       }
+    })
+  }
+
+  sortCategoryByImpact(idUser){
+    let set = {
+      $push: {
+        favouriteCategories: {
+          $each: [],
+          $sort: { impact: -1 }
+        }
+      }
+    }
+    let query = { id: idUser}
+    User.updateOne(query, set, (err, res) => {
+      err ? console.log(err) : console.log(res)
     })
   }
 
@@ -140,8 +153,7 @@ class UserClass {
           if(err) {
             console.log(err)
           } else {
-            // console.log(res)
-            this.addImpactCategory(category, idUser)
+            this.addImpactCategory(category, idUser, idVideo)
           }
         })
       }

@@ -49,4 +49,26 @@ module.exports = class Helper {
     return await findCategory
   }
 
+  async getDurationVideo(idVideo){
+    // ritorno la durata del video 
+    let query = { id: idVideo }
+    let fieldsToReturn = {
+      videoDuration: true,
+      _id: false
+    }
+    let duration
+    var getDuration = new Promise((resolve, reject) => {
+      Video.findOne(query, fieldsToReturn, (err, res) => {
+        if(err) {
+          console.log(err)
+        } else {
+          duration = res.videoDuration
+        }
+        resolve(true)
+      })
+    })
+    await getDuration
+    return parseInt(duration)
+  }
+
 }
