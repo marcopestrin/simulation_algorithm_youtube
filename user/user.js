@@ -9,33 +9,35 @@ const Helper = require("../helper")
 var helper = new Helper()
 
 class UserClass {
-  constructor(idVideo,idUser){
-  }
+  constructor(){}
 
   videoCommented(idVideo, idUser) {
+    let action = global.ID_ACTION_COMMENT
     let query = { id: idUser }
     // traccio che l'utente ha commentato questo video
     let set = {$push: {commentedVideos: idVideo}};
     User.updateOne(query, set, (err, res) => {
-      err ? console.log(err) : console.log(res)
+      err ? console.log(err) : this.addImpact(idUser, idVideo, action)
     })
   }
   
   videoLiked(idVideo, idUser) {
+    let action = global.ID_ACTION_LIKE
     let query = { id: idUser }
     // traccio che a l'utente è piaciuto questo video
     let set = {$push: {likedVideos: idVideo}};
     User.updateOne(query, set, (err, res) => {
-      err ? console.log(err) : console.log(res)
+      err ? console.log(err) : this.addImpact(idUser, idVideo, action)
     })
   }
   
   videoShared(idVideo, idUser) {
+    let action = global.ID_ACTION_SHARE
     let query = { id: idUser }
     // traccio che l'utente ha condiviso questo video
     let set = {$push: {sharedVideos: idVideo}};
     User.updateOne(query, set, (err, res) => {
-      err ? console.log(err) : console.log(res)
+      err ? console.log(err) : this.addImpact(idUser, idVideo, action)
     })
   }
 
@@ -61,7 +63,17 @@ class UserClass {
     return false
   }
 
-  async categoryAlreadyWatched(category, idUser){
+  channelExist(listChannels, author) {
+    // la funziona controlla se il dato è presente nell'array
+    for(var i = 0; i < listChannels.length; i++) {
+      if (listChannels[i].channel === author) {
+        return true
+      }
+    }
+    return false
+  }
+
+  async categoryAlreadyWatched(category, idUser) {
     // controllo se questo utente ha già guardato un video di questa categoria
     let query = { id: idUser }
     let fieldsToReturn = {
@@ -81,11 +93,85 @@ class UserClass {
     await findCategory
     return categoryExist
   }
-  
-  async addImpactCategory(category, idUser, idVideo){
+
+  async channelAlreadyWatched(author, idUser) {
+    // controllo se questo utente ha già guardato un video di questo canale
+    let query = { id: idUser }
+    let fieldsToReturn = {
+      favouriteChannels: true
+    }
+    let channelExist
+    var findChannel = new Promise((resolve, reject) => {
+      User.findOne(query, fieldsToReturn, (err, res) => {
+        if(err) {
+          console.log(err)
+        } else {
+          channelExist = this.channelExist(res.favouriteChannels, author)
+        }
+        resolve(true)
+      })
+    })
+    await findChannel
+    return channelExist
+  }
+
+  getImpactValue(action, duration) {
+    let impact = 1
+    if (action === global.ID_ACTION_TIME_WATCH) {
+      impact =  duration * global.WEIGHT_TIME_WATCH_IN_BEST_CAT
+    }
+    if (action === global.ID_ACTION_COMMENT) {
+      impact = global.WEIGHT_COMMENT_IN_BEST_CAT
+    }
+    if (action === global.ID_ACTION_SHARE) {
+      impact = global.WEIGHT_SHARE_IN_BEST_CAT
+    }
+    if (action === global.ID_ACTION_LIKE) {
+      impact = global.WEIGHT_LIKE_IN_BEST_CAT
+    }
+    return impact
+  }
+ 
+  addImpact(idUser, idVideo, action) {
+    this.addImpactCategory(idUser, idVideo, action)
+    this.addImpactChannel(idUser, idVideo, action)
+  }
+
+  async addImpactChannel(idUser, idVideo, action) {
     let set, newData, filter
+    let author = await helper.getIdAuthor(idVideo)
+    let impact = global.IMPACT_VIEW_FOR_CHANNEL
+    let query = { id: idUser }
+    if(await this.channelAlreadyWatched(author, idUser)) {
+      // vado ad incrementare l'interesse verso questa categoria
+      set = { $inc: {
+        "favouriteChannels.$[el].impact": impact
+      }}
+      filter = { arrayFilters: [
+        { "el.channel": parseInt(author) }
+      ]}
+    } else {
+      // l'utente è neofita di questa categoria di video
+      newData = { channel: author , impact }
+      set = { $push: {
+        favouriteChannels: newData
+      }}
+    }
+    User.updateOne(query, set, filter, (err, res) => {
+      if(err) {
+        console.log(err)
+      } else {
+        // ordino le categorie per il loro valore d'impatto sull'utente
+        this.sortChannelsByImpact(idUser)
+      }
+    })
+  }
+
+  async addImpactCategory(idUser, idVideo, action) {
+    let set, newData, filter
+    let category = await helper.getIdCategory(idVideo)
     let duration = await helper.getDurationVideo(idVideo)
-    let impact =  duration * global.WEIGHT_TIME_WATCH_IN_BEST_CAT
+    let impact = this.getImpactValue(action, duration)
     let query = { id: idUser }
     if(await this.categoryAlreadyWatched(category, idUser)) {
       // vado ad incrementare l'interesse verso questa categoria
@@ -107,29 +193,14 @@ class UserClass {
         console.log(err)
       } else {
         // ordino le categorie per il loro valore d'impatto sull'utente
-        this.sortCategoryByImpact(idUser)
+        this.sortCategoriesByImpact(idUser)
       }
-    })
-  }
-
-  sortCategoryByImpact(idUser){
-    let set = {
-      $push: {
-        favouriteCategories: {
-          $each: [],
-          $sort: { impact: -1 }
-        }
-      }
-    }
-    let query = { id: idUser}
-    User.updateOne(query, set, (err, res) => {
-      err ? console.log(err) : console.log(res)
     })
   }
 
   async videoWatched(idVideo, idUser, percentage) {
     let author = await helper.getIdAuthor(idVideo)
-    let category = await helper.getIdCategory(idVideo)
+    let action = global.ID_ACTION_TIME_WATCH
     let query = { id: idUser }
     let set, filter
     User.findOne(query, (err, res) => {
@@ -153,10 +224,40 @@ class UserClass {
           if(err) {
             console.log(err)
           } else {
-            this.addImpactCategory(category, idUser, idVideo)
+            this.addImpact(idUser, idVideo, action)
           }
         })
       }
+    })
+  }
+  
+  sortCategoriesByImpact(idUser) {
+    let set = {
+      $push: {
+        favouriteCategories: {
+          $each: [],
+          $sort: { impact: -1 }
+        }
+      }
+    }
+    let query = { id: idUser}
+    User.updateOne(query, set, (err, res) => {
+      err ? console.log(err) : console.log(res)
+    })
+  }
+  
+  sortChannelsByImpact(idUser) {
+    let set = {
+      $push: {
+        favouriteChannels: {
+          $each: [],
+          $sort: { impact: -1 }
+        }
+      }
+    }
+    let query = { id: idUser}
+    User.updateOne(query, set, (err, res) => {
+      err ? console.log(err) : console.log(res)
     })
   }
 }

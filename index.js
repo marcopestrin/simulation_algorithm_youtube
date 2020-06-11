@@ -17,8 +17,8 @@ if (videoToAdd) {
 */
 const idUser = 3
 const percentage = 65
-const idVideo = 4
-// interation.addLike(idVideo, idUser)
-// interation.addComment(idVideo, idUser)
-// interation.share(idVideo, idUser)
-interation.feedbackTimeWatched(idVideo, idUser, percentage)
+const idVideo = 2
+interation.addLike(idVideo, idUser)
+//interation.addComment(idVideo, idUser)
+//interation.share(idVideo, idUser)
+//interation.feedbackTimeWatched(idVideo, idUser, percentage)
