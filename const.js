@@ -32,6 +32,19 @@ module.exports = Object.freeze({
   INCREMENT_VALUE_3_POINTBREAK: 4,
   INCREMENT_VALUE_4_POINTBREAK: 5,
 
+  // attenzione, non è retroattivo il cambiamento dei seguenti valori
+  CATEGORIES: [
+    { id: 1, name: 'Technology' },
+    { id: 2, name: 'Sport' },
+    { id: 3, name: 'Food' },
+    { id: 4, name: 'Finance' },
+    { id: 5, name: 'Entertainment' },
+    { id: 6, name: 'Travel' },
+  ],
+
+  LIMIT_CATEGORIES_SUGGESTION: 3,
+  LIMIT_CHANNELS_SUGGESTION: 3,
+
   // variabili per il database
   COLLECTION_NAME_VIDEO: 'video',
   COLLECTION_NAME_PROFILATION: 'user',

@@ -131,4 +131,34 @@ module.exports = class Helper {
     }
     return impact
   }
+
+  async getVideosByCategory(category) {
+    // ritorno i video di una determinata categoria
+    try {
+      var videos = new Promise((resolve, reject) => {
+        Video.find({category}).lean(true).exec((err, res) => {
+          if(err) throw(err) 
+          resolve(res)
+        })
+      })
+      return await videos
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  
+  async getVideosByChannel(author) {
+    // ritorno i video di una determinato canale
+    try {
+      var videos = new Promise((resolve, reject) => {
+        Video.find({author}).lean(true).exec((err, res) => {
+          if(err) throw(err) 
+          resolve(res)
+        })
+      })
+      return await videos
+    } catch (error) {
+      console.log(error)
+    }
+  }
 }
