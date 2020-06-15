@@ -13,6 +13,25 @@ var helper = new Helper()
 class VideoInterationClass {
   constructor(){}
 
+  async isEmptycollection() {
+    try {
+      let result
+      var check = new Promise((resolve, reject) => {
+        Video.find().exec((err, res) =>{
+          if (err) throw (err)
+          if (res) {
+            result = res.length === 0
+            resolve(true)
+          }
+        })
+      })
+      await check
+      return result
+    }catch(error) {
+      console.log(error)
+    }
+  }
+
   addLike(idVideo, idUser) {
     let query = { id: idVideo }
     // aggiungo +1 al contatore dei mi piace
@@ -80,7 +99,27 @@ class VideoInterationClass {
     } catch(error) {
       console.log(error)
     }
-    
+  }
+
+  async refreshHype() {
+    // quando l'hype è finito flaggo il campo a 0
+    let query = {
+      hypeExpires: {
+        $lt: Math.floor(Date.now() / 1000)
+      }
+    }
+    let set = {
+      $set: {
+        hypeExpires: 0
+      }
+    }
+    try {
+      Video.updateMany(query, set, (err, res) => {
+        if (err) throw(err)
+      })
+    } catch(error) {
+      console.log(error)
+    }
   }
 }
 module.exports = VideoInterationClass

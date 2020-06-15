@@ -55,6 +55,7 @@ class SuggestionClass {
   }
 
   async getSuggestedVideos(idUser){
+    // viene fatto un merge dei video preferiti in base alle categorie e ai canali
     let favouritesCategories = await this.getFavouriteCategories(idUser)
     let favouritesChannels = await this.getFavouriteChannels(idUser)
     let videos = []

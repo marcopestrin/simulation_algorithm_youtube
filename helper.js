@@ -148,7 +148,7 @@ module.exports = class Helper {
   }
   
   async getVideosByChannel(author) {
-    // ritorno i video di una determinato canale
+    // ritorno i video di una determinato autore/canale
     try {
       var videos = new Promise((resolve, reject) => {
         Video.find({author}).lean(true).exec((err, res) => {

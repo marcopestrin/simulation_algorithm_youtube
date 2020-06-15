@@ -11,6 +11,25 @@ var helper = new Helper()
 class UserClass {
   constructor(){}
 
+  async isEmptycollection() {
+    try {
+      let result
+      var check = new Promise((resolve, reject) => {
+        User.find().exec((err, res) =>{
+          if (err) throw (err)
+          if (res) {
+            result = res.length === 0
+            resolve(true)
+          }
+        })
+      })
+      await check
+      return result
+    }catch(error) {
+      console.log(error)
+    }
+  }
+
   videoCommented(idVideo, idUser) {
     let action = global.ID_ACTION_COMMENT
     let query = { id: idUser }
