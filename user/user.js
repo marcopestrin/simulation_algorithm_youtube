@@ -30,49 +30,72 @@ class UserClass {
     }
   }
 
-  videoCommented(idVideo, idUser) {
+  async videoCommented(idVideo, idUser) {
     let action = global.ID_ACTION_COMMENT
     let query = { id: idUser }
     // traccio che l'utente ha commentato questo video
     let set = {$push: {commentedVideos: idVideo}};
     try {
-      User.updateOne(query, set, (err, res) => {
-        if (err) throw(err)
-        this.addImpact(idUser, idVideo, action)
+      var videoCommentato = new Promise((resolve, reject) => {
+        User.updateOne(query, set, async(err, res) => {
+          if (err) throw(err)
+          let result = {
+              videoCommentato: res,
+              impatto: await this.addImpact(idUser, idVideo, action)
+          }
+          resolve(result)
+        })
       })
+      return await videoCommentato
     } catch(error) {
       console.log(error)
+      return error
     }
-    
   }
-  
-  videoLiked(idVideo, idUser) {
+      
+  async videoLiked(idVideo, idUser) {
     let action = global.ID_ACTION_LIKE
     let query = { id: idUser }
     // traccio che a l'utente è piaciuto questo video
     let set = {$push: {likedVideos: idVideo}};
     try {
-      User.updateOne(query, set, (err, res) => {
-        if (err) throw(err)
-        this.addImpact(idUser, idVideo, action)
+      var videoPiaciuto = new Promise((resolve, reject) => {
+        User.updateOne(query, set, async(err, res) => {
+          if (err) throw(err)
+          let result = {
+            videoPiaciuto: res,
+            impatto: await this.addImpact(idUser, idVideo, action)
+          }
+          resolve(result)
+        })
       })
+      return await videoPiaciuto
     } catch(error) {
       console.log(error)
+      return error
     }
   }
   
-  videoShared(idVideo, idUser) {
+  async videoShared(idVideo, idUser) {
     let action = global.ID_ACTION_SHARE
     let query = { id: idUser }
     // traccio che l'utente ha condiviso questo video
     let set = {$push: {sharedVideos: idVideo}};
     try {
-      User.updateOne(query, set, (err, res) => {
-        if(err) throw(err)
-        this.addImpact(idUser, idVideo, action)
+      var videoCondiviso = new Promise((resolve, reject) => {
+        User.updateOne(query, set, async(err, res) => {
+          if(err) throw(err)
+          let result = {
+            videoCondiviso: res,
+            impatto: await this.addImpact(idUser, idVideo, action)
+          }
+          resolve(result)
+        })
       })
+      return await videoCondiviso
     } catch(error) {
       console.log(error)
+      return error
     }
   }
 
@@ -132,39 +155,49 @@ class UserClass {
     }
   }
  
-  addImpact(idUser, idVideo, action) {
-    this.addImpactCategory(idUser, idVideo, action)
-    this.addImpactChannel(idUser, idVideo, action)
+  async addImpact(idUser, idVideo, action) {
+    let impactedCategory = await this.addImpactCategory(idUser, idVideo, action)
+    let impactedChannel = await this.addImpactChannel(idUser, idVideo)
+    return Object.assign({}, impactedCategory, impactedChannel);
   }
 
-  async addImpactChannel(idUser, idVideo, action) {
-    let set, newData, filter
-    let author = await helper.getIdAuthor(idVideo)
-    let impact = global.IMPACT_VIEW_FOR_CHANNEL
-    let query = { id: idUser }
-    if(await this.channelAlreadyWatched(author, idUser)) {
-      // vado ad incrementare l'interesse verso questa categoria
-      set = { $inc: {
-        "favouriteChannels.$[el].impact": impact
-      }}
-      filter = { arrayFilters: [
-        { "el.channel": parseInt(author) }
-      ]}
-    } else {
-      // l'utente è neofita di questa categoria di video
-      newData = { channel: author , impact }
-      set = { $push: {
-        favouriteChannels: newData
-      }}
-    }
-    User.updateOne(query, set, filter, (err, res) => {
-      if(err) {
-        console.log(err)
+  async addImpactChannel(idUser, idVideo) {
+    try {
+      let set, newData, filter
+      let author = await helper.getIdAuthor(idVideo)
+      let impact = global.IMPACT_VIEW_FOR_CHANNEL
+      let query = { id: idUser }
+      if(await this.channelAlreadyWatched(author, idUser)) {
+        // vado ad incrementare l'interesse verso questa categoria
+        set = { $inc: {
+          "favouriteChannels.$[el].impact": impact
+        }}
+        filter = { arrayFilters: [
+          { "el.channel": parseInt(author) }
+        ]}
       } else {
-        // ordino le categorie per il loro valore d'impatto sull'utente
-        this.sortChannelsByImpact(idUser)
+        // l'utente è neofita di questa categoria di video
+        newData = { channel: author , impact }
+        set = { $push: {
+          favouriteChannels: newData
+        }}
       }
-    })
+      var impattoCanale = new Promise((resolve, reject) => {
+        User.updateOne(query, set, filter, async(err, res) => {
+          if(err) throw (err)
+          // ordino le categorie per il loro valore d'impatto sull'utente
+          var result = {
+            addImpactChannel: res,
+            sortChannelsByImpact: await this.sortChannelsByImpact(idUser)
+          }
+          resolve(result)
+        })
+      })
+      return await impattoCanale
+    } catch(error) {
+      console.log(error)
+      return error
+    }
   }
 
   async addImpactCategory(idUser, idVideo, action) {
@@ -189,13 +222,21 @@ class UserClass {
           favouriteCategories: newData
         }}
       }
-      User.updateOne(query, set, filter, (err, res) => {
-        if(err) throw(err)
-        // ordino le categorie per il loro valore d'impatto sull'utente
-        this.sortCategoriesByImpact(idUser)
+      var impattoCategoria = new Promise((resolve, reject) => {
+        User.updateOne(query, set, filter, async(err, res) => {
+          if(err) throw(err)
+          // ordino le categorie per il loro valore d'impatto sull'utente
+          var result = {
+            addImpactCategory: res,
+            sortCategoriesByImpact: await this.sortCategoriesByImpact(idUser)
+          }
+          resolve(result)
+        })
       })
+      return await impattoCategoria
     } catch(error) {
       console.log(error)
+      return error
     }
   }
 
@@ -205,34 +246,42 @@ class UserClass {
       let action = global.ID_ACTION_TIME_WATCH
       let query = { id: idUser }
       let set, filter
-      User.findOne(query, (err, res) => {
-        if (err) throw(err)
-        if (res && this.authorAlreadyWatched(res.authorsWatched, author)) {
-          // l'utente ha già visto un video di questo canale
-          set = { $inc: {
-            "authorsWatched.$[el].timeWatched": percentage
-          }}
-          filter = { arrayFilters: [
-            { "el.author": parseInt(author) }
-          ]}
-        } else {
-          // l'utente è la prima volta che scopre questo canale
-          set = { $push: {
-            authorsWatched: { author, timeWatched: percentage }
-          }}
-        }
-        let query = { id: res.id }
-        User.updateOne(query, set, filter, (err, res) => {
+      var videoGuardatoFeedback = new Promise((resolve, reject) => {
+        User.findOne(query, (err, res) => {
           if (err) throw(err)
-          this.addImpact(idUser, idVideo, action)
+          if (res && this.authorAlreadyWatched(res.authorsWatched, author)) {
+            // l'utente ha già visto un video di questo canale
+            set = { $inc: {
+              "authorsWatched.$[el].timeWatched": percentage
+            }}
+            filter = { arrayFilters: [
+              { "el.author": parseInt(author) }
+            ]}
+          } else {
+            // l'utente è la prima volta che scopre questo canale
+            set = { $push: {
+              authorsWatched: { author, timeWatched: percentage }
+            }}
+          }
+          let query = { id: res.id }
+          User.updateOne(query, set, filter, async(err, res) => {
+            if (err) throw(err)
+            let result = {
+              videoGuardatoFeedback: res,
+              impatto: await this.addImpact(idUser, idVideo, action)
+            }
+            resolve(result)
+          })
         })
       })
+      return await videoGuardatoFeedback
     } catch(error) {
       console.log(error)
+      return error
     }
   }
   
-  sortCategoriesByImpact(idUser) {
+  async sortCategoriesByImpact(idUser) {
     let set = {
       $push: {
         favouriteCategories: {
@@ -243,16 +292,19 @@ class UserClass {
     }
     let query = { id: idUser}
     try {
-      User.updateOne(query, set, (err, res) => {
-        if (err) throw(err)
-        console.log('sortCategoriesByImpact ', res)
+      var ordinamentoPerImpatto = new Promise((resolve, reject) => {
+        User.updateOne(query, set, (err, res) => {
+          if (err) throw(err)
+          resolve(res)
+        })
       })
+      return await ordinamentoPerImpatto
     } catch(err) {
       console.log(err)
     }
   }
   
-  sortChannelsByImpact(idUser) {
+  async sortChannelsByImpact(idUser) {
     let set = {
       $push: {
         favouriteChannels: {
@@ -263,10 +315,13 @@ class UserClass {
     }
     let query = { id: idUser}
     try {
-      User.updateOne(query, set, (err, res) => {
-        if (err) throw(err)
-        console.log('sortChannelsByImpact ', res)
+      var ordinamentoPerImpatto = new Promise((resolve, reject) => {
+        User.updateOne(query, set, (err, res) => {
+          if (err) throw(err)
+          resolve(res)
+        })
       })
+      return await ordinamentoPerImpatto
     } catch(error) {
       console.log(error)
     }

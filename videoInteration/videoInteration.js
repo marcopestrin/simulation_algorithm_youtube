@@ -32,7 +32,7 @@ class VideoInterationClass {
     }
   }
 
-  addLike(idVideo, idUser) {
+  async addLike(idVideo, idUser) {
     let query = { id: idVideo }
     // aggiungo +1 al contatore dei mi piace
     let set = { $inc: {
@@ -40,16 +40,24 @@ class VideoInterationClass {
       value: global.INCREMENT_VALUE_BY_LIKE
     }}
     try {
-      Video.updateOne(query, set, (err, res) => {
-        if (err) throw(err)
-        user.videoLiked(idVideo, idUser)
+      var likeAggiunto = new Promise((resolve, reject) => {
+        Video.updateOne(query, set, async(err, res) => {
+          if (err) throw(err)
+          var result = {
+            likeAggiunto: res,
+            videoLiked: await user.videoLiked(idVideo, idUser)
+          }
+          resolve(result)
+        })
       })
+      return await likeAggiunto
     } catch (error) {
       console.log(error)
+      return error
     }
   }
   
-  share(idVideo, idUser) {
+  async share(idVideo, idUser) {
     let query = { id: idVideo }
     // aggiungo +1 al contatore delle condivisioni
     let set = { $inc: {
@@ -57,16 +65,24 @@ class VideoInterationClass {
       value: global.INCREMENT_VALUE_BY_SHARE
     }}
     try {
-      Video.updateOne(query, set, (err, res) => {
-        if (err) throw(err)
-        user.videoShared(idVideo, idUser)
+      var videoCondiviso = new Promise((resolve, reject) => {
+        Video.updateOne(query, set, async(err, res) => {
+          if (err) throw(err)
+          let result = {
+            videoCondiviso: res,
+            videoShared: await user.videoShared(idVideo, idUser)
+          }
+          resolve(result)
+        })
       })
+      return await videoCondiviso
     } catch (error) {
       console.log(error)
+      return error
     }
   }
   
-  addComment(idVideo, idUser) {
+  async addComment(idVideo, idUser) {
     let query = {id: idVideo}
     // aggiungo +1 al contatore dei commenti
     let set = { $inc: {
@@ -74,16 +90,25 @@ class VideoInterationClass {
       value: global.INCREMENT_VALUE_BY_COMMENT
     }}
     try {
-      Video.updateOne(query, set, (err, res) => {
-        if (err) throw(err)
-        user.videoCommented(idVideo, idUser)
+      var commentoAggiunto = new Promise((resolve, reject) => {
+        Video.updateOne(query, set, async(err, res) => {
+          if (err) throw(err)
+          var result = {
+            commentoAggiunto: res,
+            videoCommented: await user.videoCommented(idVideo, idUser)
+          }
+          resolve(result)
+        })
       })
+      return await commentoAggiunto
+      return a
     } catch(error) {
       console.log(error)
+      return error
     }
   }
 
-  feedbackTimeWatched(idVideo, idUser, percentage) {
+  async feedbackTimeWatched(idVideo, idUser, percentage) {
     let valueToIncrement = helper.chooseRange(percentage)
     let query = { id: idVideo }
     // aggiungo +1 al contatore delle visualizzazioni
@@ -92,12 +117,20 @@ class VideoInterationClass {
       value: valueToIncrement
     }}
     try {
-      Video.updateOne(query, set, (err, res) => {
-        if (err) throw(err)
-        user.videoWatched(idVideo, idUser, valueToIncrement)
+      var riscontro = new Promise((resolve, reject) => {
+        Video.updateOne(query, set, async(err, res) => {
+          if (err) throw(err)
+          let result = {
+            riscontro: res,
+            videoWatched: await user.videoWatched(idVideo, idUser, valueToIncrement)
+          }
+          resolve(result)
+        })
       })
+      return await riscontro
     } catch(error) {
       console.log(error)
+      return error
     }
   }
 
@@ -114,11 +147,16 @@ class VideoInterationClass {
       }
     }
     try {
-      Video.updateMany(query, set, (err, res) => {
-        if (err) throw(err)
+      var refreshed = new Promise((resolve, reject) => {
+        Video.updateMany(query, set, (err, res) => {
+          if (err) throw(err)
+          if (res) resolve(res)
+        })
       })
+      return await refreshed
     } catch(error) {
       console.log(error)
+      return error
     }
   }
 
@@ -134,11 +172,16 @@ class VideoInterationClass {
         id: idVideo
     }
     try {
-      Video.find(query, (err, res) => {
-        if (err) throw(err)
+      var isViral = new Promise((resolve, reject) => {
+        Video.find(query, (err, res) => {
+          if (err) throw(err)
+          if (res) resolve(res)
+        })
       })
+      return await isViral
     } catch(error) {
       console.log(error)
+      return error
     }
   }
 }

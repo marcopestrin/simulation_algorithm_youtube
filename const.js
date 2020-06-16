@@ -48,6 +48,9 @@ module.exports = Object.freeze({
   HOURS_HYPE: 30, //espresso in ore
   POINTBREAK_VIRAL: 100,
 
+  //app settings
+  EXPRESS_PORT: 3000,
+
   // variabili per il database
   COLLECTION_NAME_VIDEO: 'video',
   COLLECTION_NAME_PROFILATION: 'user',
