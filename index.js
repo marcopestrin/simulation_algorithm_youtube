@@ -11,7 +11,7 @@ const userToAdd = require("./user.json")
 const videoToAdd = require("./video.json")
 const idUser = 3
 const percentage = 90
-const idVideo = 6
+const idVideo = 2
 
 async function exec(){
   if(await user.isEmptycollection() && userToAdd) {
@@ -26,7 +26,8 @@ async function exec(){
     })
   }
   
-  await interation.refreshHype()
+  // await interation.refreshHype()
+  // await interation.isViral(idVideo)
 
   // await interation.addLike(idVideo, idUser)
   // await interation.addComment(idVideo, idUser)

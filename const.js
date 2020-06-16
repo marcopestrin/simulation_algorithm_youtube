@@ -46,6 +46,7 @@ module.exports = Object.freeze({
   LIMIT_CHANNELS_SUGGESTION: 3,
 
   HOURS_HYPE: 30, //espresso in ore
+  POINTBREAK_VIRAL: 100,
 
   // variabili per il database
   COLLECTION_NAME_VIDEO: 'video',

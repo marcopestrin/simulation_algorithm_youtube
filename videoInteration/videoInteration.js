@@ -121,5 +121,25 @@ class VideoInterationClass {
       console.log(error)
     }
   }
+
+  async isViral(idVideo){
+    // se arriva a 100 prima che l'hype finisca
+    let query = {
+        value: {
+          $gt: global.POINTBREAK_VIRAL
+        },
+        hypeExpires: {
+          $gt: 1
+        },
+        id: idVideo
+    }
+    try {
+      Video.find(query, (err, res) => {
+        if (err) throw(err)
+      })
+    } catch(error) {
+      console.log(error)
+    }
+  }
 }
 module.exports = VideoInterationClass
