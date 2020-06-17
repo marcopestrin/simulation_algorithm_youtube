@@ -32,7 +32,8 @@ class VideoInterationClass {
     }
   }
 
-  async addLike(idVideo, idUser) {
+  async addLike(req, res) {
+    const { idVideo, idUser } = req.body
     let query = { id: idVideo }
     // aggiungo +1 al contatore dei mi piace
     let set = { $inc: {
@@ -50,14 +51,15 @@ class VideoInterationClass {
           resolve(result)
         })
       })
-      return await likeAggiunto
+      res.send(await likeAggiunto)
     } catch (error) {
       console.log(error)
       return error
     }
   }
   
-  async share(idVideo, idUser) {
+  async share(req, res) {
+    const { idVideo, idUser } = req.body
     let query = { id: idVideo }
     // aggiungo +1 al contatore delle condivisioni
     let set = { $inc: {
@@ -75,14 +77,15 @@ class VideoInterationClass {
           resolve(result)
         })
       })
-      return await videoCondiviso
+      res.send(await videoCondiviso)
     } catch (error) {
       console.log(error)
       return error
     }
   }
   
-  async addComment(idVideo, idUser) {
+  async addComment(req, res) {
+    const { idVideo, idUser } = req.body
     let query = {id: idVideo}
     // aggiungo +1 al contatore dei commenti
     let set = { $inc: {
@@ -100,15 +103,15 @@ class VideoInterationClass {
           resolve(result)
         })
       })
-      return await commentoAggiunto
-      return a
+      res.send(await commentoAggiunto)
     } catch(error) {
       console.log(error)
       return error
     }
   }
 
-  async feedbackTimeWatched(idVideo, idUser, percentage) {
+  async feedbackTimeWatched(req, res) {
+    const { idVideo, idUser, percentage } = req.body
     let valueToIncrement = helper.chooseRange(percentage)
     let query = { id: idVideo }
     // aggiungo +1 al contatore delle visualizzazioni
@@ -127,14 +130,14 @@ class VideoInterationClass {
           resolve(result)
         })
       })
-      return await riscontro
+      res.send(await riscontro)
     } catch(error) {
       console.log(error)
       return error
     }
   }
 
-  async refreshHype() {
+  async refreshHype(req, res) {
     // quando l'hype è finito flaggo il campo a 0
     let query = {
       hypeExpires: {
@@ -153,14 +156,15 @@ class VideoInterationClass {
           if (res) resolve(res)
         })
       })
-      return await refreshed
+      res.send(await refreshed)
     } catch(error) {
       console.log(error)
       return error
     }
   }
 
-  async isViral(idVideo){
+  async isViral(req, res){
+    const { idVideo, idUser } = req.body
     // se arriva a 100 prima che l'hype finisca
     let query = {
         value: {
@@ -178,7 +182,7 @@ class VideoInterationClass {
           if (res) resolve(res)
         })
       })
-      return await isViral
+      res.send(await isViral)
     } catch(error) {
       console.log(error)
       return error
