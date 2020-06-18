@@ -1,34 +1,9 @@
-const mongoose = require("mongoose");
-
 const global = require('../const.js')
-const { User } = require("../model");
-
-mongoose.connect('mongodb://localhost:27017/'+global.DATABASE_NAME, {useNewUrlParser: true});
-
-const Helper = require("../helper")
-var helper = new Helper()
+const helper = require("../helper")
+const { User, Video } = require("../model");
 
 class UserClass {
   constructor(){}
-
-  async isEmptycollection() {
-    try {
-      let result
-      var check = new Promise((resolve, reject) => {
-        User.find().exec((err, res) =>{
-          if (err) throw (err)
-          if (res) {
-            result = res.length === 0
-            resolve(true)
-          }
-        })
-      })
-      await check
-      return result
-    }catch(error) {
-      console.log(error)
-    }
-  }
 
   async videoCommented(idVideo, idUser) {
     let action = global.ID_ACTION_COMMENT
@@ -122,7 +97,7 @@ class UserClass {
       var findCategory = new Promise((resolve, reject) => {
         User.findOne(query, fieldsToReturn, (err, res) => {
           if(err) throw(err)
-          categoryExist = helper.categoryExist(res.favouriteCategories, category)
+          categoryExist = this.categoryExist(res.favouriteCategories, category)
           resolve(true)
         })
       })
@@ -131,6 +106,26 @@ class UserClass {
     } catch(error) {
       console.log(error)
     }
+  }
+
+  channelExist(listChannels, author) {
+    // la funziona controlla se il dato è presente nell'array
+    for(var i = 0; i < listChannels.length; i++) {
+      if (listChannels[i].channel === author) {
+        return true
+      }
+    }
+    return false
+  }
+
+  categoryExist(listCategories, category) {
+    // la funziona controlla se il dato è presente nell'array
+    for(var i = 0; i < listCategories.length; i++) {
+      if (listCategories[i].category === category) {
+        return true
+      }
+    }
+    return false
   }
 
   async channelAlreadyWatched(author, idUser) {
@@ -144,7 +139,7 @@ class UserClass {
       var findChannel = new Promise((resolve, reject) => {
         User.findOne(query, fieldsToReturn, (err, res) => {
           if(err) throw(err)
-          channelExist = helper.channelExist(res.favouriteChannels, author)
+          channelExist = this.channelExist(res.favouriteChannels, author)
           resolve(true)
         })
       })
@@ -164,7 +159,7 @@ class UserClass {
   async addImpactChannel(idUser, idVideo) {
     try {
       let set, newData, filter
-      let author = await helper.getIdAuthor(idVideo)
+      let author = await this.getIdAuthor(idVideo)
       let impact = global.IMPACT_VIEW_FOR_CHANNEL
       let query = { id: idUser }
       if(await this.channelAlreadyWatched(author, idUser)) {
@@ -188,7 +183,7 @@ class UserClass {
           // ordino le categorie per il loro valore d'impatto sull'utente
           var result = {
             addImpactChannel: res,
-            sortChannelsByImpact: await this.sortChannelsByImpact(idUser)
+            sortChannelsByImpact: await helper.sortChannelsByImpact(idUser)
           }
           resolve(result)
         })
@@ -228,7 +223,7 @@ class UserClass {
           // ordino le categorie per il loro valore d'impatto sull'utente
           var result = {
             addImpactCategory: res,
-            sortCategoriesByImpact: await this.sortCategoriesByImpact(idUser)
+            sortCategoriesByImpact: await helper.sortCategoriesByImpact(idUser)
           }
           resolve(result)
         })
@@ -242,7 +237,7 @@ class UserClass {
 
   async videoWatched(idVideo, idUser, percentage) {
     try {
-      let author = await helper.getIdAuthor(idVideo)
+      let author = await this.getIdAuthor(idVideo)
       let action = global.ID_ACTION_TIME_WATCH
       let query = { id: idUser }
       let set, filter
@@ -280,52 +275,29 @@ class UserClass {
       return error
     }
   }
-  
-  async sortCategoriesByImpact(idUser) {
-    let set = {
-      $push: {
-        favouriteCategories: {
-          $each: [],
-          $sort: { impact: -1 }
-        }
-      }
+
+  async getIdAuthor(idVideo) {
+    // ritorno l'identificativo del canale del video
+    let fieldsToReturn = {
+      author: true,
+      _id: false
     }
-    let query = { id: idUser}
+    let query = {
+      id: idVideo
+    }
     try {
-      var ordinamentoPerImpatto = new Promise((resolve, reject) => {
-        User.updateOne(query, set, (err, res) => {
-          if (err) throw(err)
-          resolve(res)
+      var findAuthor = new Promise((resolve, reject) => {
+        Video.findOne(query, fieldsToReturn, (err, res) => {
+          if(err) throw(err)
+          resolve(res.author)
         })
       })
-      return await ordinamentoPerImpatto
-    } catch(err) {
-      console.log(err)
-    }
-  }
-  
-  async sortChannelsByImpact(idUser) {
-    let set = {
-      $push: {
-        favouriteChannels: {
-          $each: [],
-          $sort: { impact: -1 }
-        }
-      }
-    }
-    let query = { id: idUser}
-    try {
-      var ordinamentoPerImpatto = new Promise((resolve, reject) => {
-        User.updateOne(query, set, (err, res) => {
-          if (err) throw(err)
-          resolve(res)
-        })
-      })
-      return await ordinamentoPerImpatto
-    } catch(error) {
+      return await findAuthor
+    } catch (error) {
       console.log(error)
     }
-    
   }
 }
-module.exports = UserClass
+
+var user = new UserClass()
+module.exports = Object.freeze(user)

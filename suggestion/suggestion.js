@@ -1,12 +1,6 @@
-const mongoose = require("mongoose");
-
 const global = require('../const.js')
+const helper = require("../helper")
 const { User } = require("../model");
-
-const Helper = require("../helper")
-var helper = new Helper()
-
-mongoose.connect('mongodb://localhost:27017/'+global.DATABASE_NAME, {useNewUrlParser: true});
 
 class SuggestionClass {
 
@@ -97,3 +91,6 @@ class SuggestionClass {
   }
 }
 module.exports = SuggestionClass
+
+var suggestion = new SuggestionClass()
+module.exports = Object.freeze(suggestion)

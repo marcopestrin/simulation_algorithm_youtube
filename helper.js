@@ -1,33 +1,7 @@
-const mongoose = require("mongoose");
-
 const global = require('./const.js')
-const { Video } = require("./model");
+const { Video, User} = require("./model");
+class Helper {
 
-mongoose.connect('mongodb://localhost:27017/'+global.DATABASE_NAME, {useNewUrlParser: true});
-
-module.exports = class Helper {
-
-  async getIdAuthor(idVideo) {
-    // ritorno l'identificativo del canale del video
-    let fieldsToReturn = {
-      author: true,
-      _id: false
-    }
-    let query = {
-      id: idVideo
-    }
-    try {
-      var findAuthor = new Promise((resolve, reject) => {
-        Video.findOne(query, fieldsToReturn, (err, res) => {
-          if(err) throw(err)
-          resolve(res.author)
-        })
-      })
-      return await findAuthor
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   async getIdCategory(idVideo) {
     // ritorno l'identificativo della categoria del video
@@ -94,26 +68,6 @@ module.exports = class Helper {
     return valueToIncrement
   }
 
-  channelExist(listChannels, author) {
-    // la funziona controlla se il dato è presente nell'array
-    for(var i = 0; i < listChannels.length; i++) {
-      if (listChannels[i].channel === author) {
-        return true
-      }
-    }
-    return false
-  }
-
-  categoryExist(listCategories, category) {
-    // la funziona controlla se il dato è presente nell'array
-    for(var i = 0; i < listCategories.length; i++) {
-      if (listCategories[i].category === category) {
-        return true
-      }
-    }
-    return false
-  }
-
   getImpactValue(action, duration) {
     // calcolo del valore d'impatto che ha l'azione
     let impact = 1
@@ -161,4 +115,132 @@ module.exports = class Helper {
       console.log(error)
     }
   }
+
+  async refreshHype(req, res) {
+    // quando l'hype è finito flaggo il campo a 0
+    let query = {
+      hypeExpires: {
+        $lt: Math.floor(Date.now() / 1000)
+      }
+    }
+    let set = {
+      $set: {
+        hypeExpires: 0
+      }
+    }
+    try {
+      var refreshed = new Promise((resolve, reject) => {
+        Video.updateMany(query, set, (err, res) => {
+          if (err) throw(err)
+          if (res) resolve(res)
+        })
+      })
+      res.send(await refreshed)
+    } catch(error) {
+      console.log(error)
+      return error
+    }
+  }
+
+  async isViral(req, res){
+    const { idVideo, idUser } = req.body
+    // se arriva a 100 prima che l'hype finisca
+    let query = {
+        value: {
+          $gt: global.POINTBREAK_VIRAL
+        },
+        hypeExpires: {
+          $gt: 1
+        },
+        id: idVideo
+    }
+    try {
+      var isViral = new Promise((resolve, reject) => {
+        Video.find(query, (err, res) => {
+          if (err) throw(err)
+          if (res) resolve(res)
+        })
+      })
+      res.send(await isViral)
+    } catch(error) {
+      console.log(error)
+      return error
+    }
+  }
+  async sortCategoriesByImpact(idUser) {
+    let set = {
+      $push: {
+        favouriteCategories: {
+          $each: [],
+          $sort: { impact: -1 }
+        }
+      }
+    }
+    let query = { id: idUser}
+    try {
+      var ordinamentoPerImpatto = new Promise((resolve, reject) => {
+        User.updateOne(query, set, (err, res) => {
+          if (err) throw(err)
+          resolve(res)
+        })
+      })
+      return await ordinamentoPerImpatto
+    } catch(err) {
+      console.log(err)
+    }
+  }
+  
+  async sortChannelsByImpact(idUser) {
+    let set = {
+      $push: {
+        favouriteChannels: {
+          $each: [],
+          $sort: { impact: -1 }
+        }
+      }
+    }
+    let query = { id: idUser}
+    try {
+      var ordinamentoPerImpatto = new Promise((resolve, reject) => {
+        User.updateOne(query, set, (err, res) => {
+          if (err) throw(err)
+          resolve(res)
+        })
+      })
+      return await ordinamentoPerImpatto
+    } catch(error) {
+      console.log(error)
+    } 
+  }
+
+  async isEmptycollection() {
+    try {
+      var video = new Promise(async(resolve, reject) => {
+        Video.find().exec(async(err, res) =>{
+          if (err) throw (err)
+          if (res) {
+            resolve(res.length === 0)
+          }
+        })
+      })
+      
+      var user = new Promise((resolve, reject) => {
+        User.find().exec((err, res) =>{
+          if (err) throw (err)
+          if (res) {
+            resolve(res.length === 0)
+          }
+        })
+      })
+      return {
+        user: await user,
+        video: await video
+      }
+    } catch(error) {
+      console.log(error)
+    }
+  }
 }
+
+var helper = new Helper()
+module.exports = Object.freeze(helper)

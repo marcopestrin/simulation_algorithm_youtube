@@ -1,36 +1,10 @@
-const mongoose = require("mongoose");
-
 const global = require('../const.js')
+const user = require("../user/user")
+const helper = require("../helper")
 const { Video } = require("../model");
-
-mongoose.connect('mongodb://localhost:27017/'+global.DATABASE_NAME, {useNewUrlParser: true});
-
-const UserClass = require("../user/user")
-const Helper = require("../helper")
-var user = new UserClass()
-var helper = new Helper()
 
 class VideoInterationClass {
   constructor(){}
-
-  async isEmptycollection() {
-    try {
-      let result
-      var check = new Promise((resolve, reject) => {
-        Video.find().exec((err, res) =>{
-          if (err) throw (err)
-          if (res) {
-            result = res.length === 0
-            resolve(true)
-          }
-        })
-      })
-      await check
-      return result
-    }catch(error) {
-      console.log(error)
-    }
-  }
 
   async addLike(req, res) {
     const { idVideo, idUser } = req.body
@@ -137,56 +111,7 @@ class VideoInterationClass {
     }
   }
 
-  async refreshHype(req, res) {
-    // quando l'hype è finito flaggo il campo a 0
-    let query = {
-      hypeExpires: {
-        $lt: Math.floor(Date.now() / 1000)
-      }
-    }
-    let set = {
-      $set: {
-        hypeExpires: 0
-      }
-    }
-    try {
-      var refreshed = new Promise((resolve, reject) => {
-        Video.updateMany(query, set, (err, res) => {
-          if (err) throw(err)
-          if (res) resolve(res)
-        })
-      })
-      res.send(await refreshed)
-    } catch(error) {
-      console.log(error)
-      return error
-    }
-  }
-
-  async isViral(req, res){
-    const { idVideo, idUser } = req.body
-    // se arriva a 100 prima che l'hype finisca
-    let query = {
-        value: {
-          $gt: global.POINTBREAK_VIRAL
-        },
-        hypeExpires: {
-          $gt: 1
-        },
-        id: idVideo
-    }
-    try {
-      var isViral = new Promise((resolve, reject) => {
-        Video.find(query, (err, res) => {
-          if (err) throw(err)
-          if (res) resolve(res)
-        })
-      })
-      res.send(await isViral)
-    } catch(error) {
-      console.log(error)
-      return error
-    }
-  }
 }
-module.exports = VideoInterationClass
+
+var interation = new VideoInterationClass()
+module.exports = Object.freeze(interation)
