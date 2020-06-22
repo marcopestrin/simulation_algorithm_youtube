@@ -297,6 +297,25 @@ class UserClass {
       console.log(error)
     }
   }
+
+  async getLastUsers(req, res) {
+    // ritorno gli ultimi utenti registrati
+    try {
+      var users = new Promise((resolve, reject) => {
+        User.find({})
+          .lean()
+          .sort({ 'id': -1 })
+          .limit(global.LIMIT_USERS_HOMEPAGE)
+          .exec((err, res) => {
+            if(err) throw(err)
+            resolve(res)
+        })
+      })
+      res.send(await users)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 }
 
 var user = new UserClass()

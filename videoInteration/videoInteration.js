@@ -110,7 +110,25 @@ class VideoInterationClass {
       return error
     }
   }
-
+  
+  async getLastVideos(req, res) {
+    // ritorno gli ultimi video aggiunti
+    try {
+      var videoList = new Promise((resolve, reject) => {
+        Video.find({})
+          .lean()
+          .sort({ 'dateAdded': -1 })
+          .limit(global.LIMIT_VIDEOS_HOMEPAGE)
+          .exec((err, res) => {
+            if(err) throw(err)
+            resolve(res)
+        })
+      })
+      res.send(await videoList)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 }
 
 var interation = new VideoInterationClass()

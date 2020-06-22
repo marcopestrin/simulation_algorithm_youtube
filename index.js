@@ -5,6 +5,7 @@ var app = express();
 const interation = require('./videoInteration/videoInteration')
 const suggestion = require('./suggestion/suggestion')
 const helper = require('./helper')
+const user = require('./user/user')
 const database = require("./database")
 const middleware = require ("./middleware")
 const global = require('./const')
@@ -21,6 +22,8 @@ app.post('/addComment', interation.addComment);
 app.post('/share', interation.share);
 app.post('/isViral', helper.isViral);
 app.post('/refreshHype', helper.refreshHype);
+app.get('/getLastVideos', interation.getLastVideos);
+app.get('/getLastUsers', user.getLastUsers);
 app.post('/feedbackTimeWatched', interation.feedbackTimeWatched);
 app.post('/getSuggestedVideos', async(req, res) => {
   res.send(await suggestion.getSuggestedVideos(req.body.idUser))

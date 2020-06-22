@@ -48,6 +48,9 @@ module.exports = Object.freeze({
   HOURS_HYPE: 30, //espresso in ore
   POINTBREAK_VIRAL: 100,
 
+  LIMIT_VIDEOS_HOMEPAGE: 3,
+  LIMIT_USERS_HOMEPAGE: 3,
+  
   //app settings
   EXPRESS_PORT: 3000,
 
