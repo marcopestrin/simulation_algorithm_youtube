@@ -1,0 +1,23 @@
+{
+  "category": [
+    {
+      "category": 1,
+      "name": "Technolgoy"
+    },{
+      "category": 2,
+      "name": "Sport"
+    },{
+      "category": 3,
+      "name": "Food"
+    },{
+      "category": 4,
+      "name": "Finance"
+    },{
+      "category": 5,
+      "name": "Entertainment"
+    },{
+      "category": 6,
+      "name": "Travel"
+    }
+  ]
+}

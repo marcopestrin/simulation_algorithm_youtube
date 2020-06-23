@@ -4,32 +4,44 @@
       "id": 1,
       "category": 4,
       "videoDuration": 93428,
-      "author": 1
+      "author": 1,
+      "title": "primo video",
+      "description": "questa è la descrizione"
     },{
       "id": 2,
       "category": 4,
       "videoDuration": 9764,
-      "author": 1
+      "author": 1,
+      "title": "secondo video",
+      "description": "questa è la descrizione"
     },{
       "id": 3,
       "category": 3,
       "videoDuration": 9358,
-      "author": 2
+      "author": 2,
+      "title": "terzo video",
+      "description": "questa è la descrizione"
     },{
       "id": 4,
       "category": 1,
       "videoDuration": 65,
-      "author": 2
+      "author": 2,
+      "title": "quarto video",
+      "description": "questa è la SUA descrizione 1"
     },{
       "id": 5,
       "category": 3,
       "videoDuration": 954,
-      "author": 2
+      "author": 2,
+      "title": "QUINTO",
+      "description": "questa è la SUA descrizione 2"
     },{
       "id": 6,
       "category": 2,
       "videoDuration": 432,
-      "author": 3
+      "author": 3,
+      "title": "SESTO",
+      "description": "questa è la SUA descrizione 3"
     }
   ]
 }

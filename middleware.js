@@ -1,6 +1,8 @@
-const { User, Video } = require("./model");
+const { User, Video, Author,Category } = require("./model");
 const userToAdd = require("./user.json")
 const videoToAdd = require("./video.json")
+const authorToAdd = require("./author.json")
+const categoryToAdd = require("./category.json")
 const helper = require('./helper')
 
 module.exports = async(req, res, next) => {
@@ -38,6 +40,15 @@ module.exports = async(req, res, next) => {
       })
       await videoAdded
     }
+    /*
+    Author.insertMany(authorToAdd.author, function(error, result){
+      if (error) throw(error)
+    })
+
+    Category.insertMany(categoryToAdd.category, function(error, result){
+      if (error) throw(error)
+    })
+    */
   } catch(error) {
     console.log(error)
   }

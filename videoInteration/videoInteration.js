@@ -115,16 +115,50 @@ class VideoInterationClass {
     // ritorno gli ultimi video aggiunti
     try {
       var videoList = new Promise((resolve, reject) => {
-        Video.find({})
-          .lean()
+        Video.aggregate([
+          // recupero il nome dell'autore dall'altra collection
+          { $lookup: {
+            from: 'author',
+            localField: 'author',
+            foreignField: 'author',
+            as: 'authorName'
+          }},
+          // recupero il nome della categoria dall'altra collection
+          { $lookup: {
+            from: 'category',
+            localField: 'category',
+            foreignField: 'category',
+            as: 'categoryName'
+          }},
+          // categoria e autore non devono essere array
+          { $unwind: '$categoryName' },
+          { $unwind: '$authorName' },
+          { $project: {
+            // seleziono i campi da tornare
+            "like": 1,
+            "comments": 1,
+            "share": 1,
+            "views": 1,
+            "videoDuration": 1,
+            "dateAdded": 1,
+            "title": 1,
+            "description": 1,
+            // metto i campi allo stesso livello di nidificazione
+            "author": '$authorName.name',
+            "category": '$categoryName.name'
+          }}
+        ])
+          // i più recenti
           .sort({ 'dateAdded': -1 })
+          // limita il numero di risultati
           .limit(global.LIMIT_VIDEOS_HOMEPAGE)
           .exec((err, res) => {
             if(err) throw(err)
+            console.log(res)
             resolve(res)
         })
       })
-      res.send(await videoList)
+      res.json(await videoList)
     } catch (error) {
       console.log(error)
     }
