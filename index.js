@@ -24,6 +24,7 @@ app.post('/isViral', helper.isViral);
 app.post('/refreshHype', helper.refreshHype);
 app.get('/getLastVideos', interation.getLastVideos);
 app.get('/getLastUsers', user.getLastUsers);
+app.post('/getUserDetailsById', user.getUserDetailsById);
 app.post('/feedbackTimeWatched', interation.feedbackTimeWatched);
 app.post('/getSuggestedVideos', async(req, res) => {
   res.send(await suggestion.getSuggestedVideos(req.body.idUser))

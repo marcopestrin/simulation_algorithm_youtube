@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const global = require('./const.js')
 
 const videoModel = new Schema({
-  id: { type: String, required: true },
+  id: { type: Number, required: true },
   title: { type: String, required: true },
   description: { type: String, required: false },
   category: { type: Number, required: true },
@@ -19,7 +19,7 @@ const videoModel = new Schema({
 })
 
 const userModel = new Schema({
-  id: { type: String, required: true },
+  id: { type: Number, required: true },
   favouriteCategories: { type: Array, required: true },
   favouriteChannels: { type: Array, required: true },
   likedVideos: { type: Array, default: [] },

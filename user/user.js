@@ -298,6 +298,17 @@ class UserClass {
     }
   }
 
+  async getUserDetailsById(req, res){
+    const { idUser} = req.body
+    var findUser = new Promise((resolve, reject) => {
+      User.findOne({id: idUser}, (err, res) => {
+        if(err) throw(err)
+        resolve(res)
+      })
+    })
+    res.json(await findUser)
+  }
+
   async getLastUsers(req, res) {
     // ritorno gli ultimi utenti registrati
     try {

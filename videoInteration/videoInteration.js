@@ -135,6 +135,7 @@ class VideoInterationClass {
           { $unwind: '$authorName' },
           { $project: {
             // seleziono i campi da tornare
+            "id": 1,
             "like": 1,
             "comments": 1,
             "share": 1,
