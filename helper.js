@@ -135,7 +135,7 @@ class Helper {
           if (res) resolve(res)
         })
       })
-      res.send(await refreshed)
+      res.json(await refreshed)
     } catch(error) {
       console.log(error)
       return error
@@ -161,7 +161,7 @@ class Helper {
           if (res) resolve(res)
         })
       })
-      res.send(await isViral)
+      res.json(await isViral)
     } catch(error) {
       console.log(error)
       return error

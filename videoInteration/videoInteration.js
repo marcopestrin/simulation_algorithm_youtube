@@ -25,7 +25,7 @@ class VideoInterationClass {
           resolve(result)
         })
       })
-      res.send(await likeAggiunto)
+      res.json(await likeAggiunto)
     } catch (error) {
       console.log(error)
       return error
@@ -51,7 +51,7 @@ class VideoInterationClass {
           resolve(result)
         })
       })
-      res.send(await videoCondiviso)
+      res.json(await videoCondiviso)
     } catch (error) {
       console.log(error)
       return error
@@ -77,7 +77,7 @@ class VideoInterationClass {
           resolve(result)
         })
       })
-      res.send(await commentoAggiunto)
+      res.json(await commentoAggiunto)
     } catch(error) {
       console.log(error)
       return error
@@ -104,7 +104,7 @@ class VideoInterationClass {
           resolve(result)
         })
       })
-      res.send(await riscontro)
+      res.json(await riscontro)
     } catch(error) {
       console.log(error)
       return error

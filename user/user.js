@@ -9,7 +9,7 @@ class UserClass {
     let action = global.ID_ACTION_COMMENT
     let query = { id: idUser }
     // traccio che l'utente ha commentato questo video
-    let set = {$push: {commentedVideos: idVideo}};
+    let set = {$addToSet: {commentedVideos: idVideo}};
     try {
       var videoCommentato = new Promise((resolve, reject) => {
         User.updateOne(query, set, async(err, res) => {
@@ -32,7 +32,7 @@ class UserClass {
     let action = global.ID_ACTION_LIKE
     let query = { id: idUser }
     // traccio che a l'utente è piaciuto questo video
-    let set = {$push: {likedVideos: idVideo}};
+    let set = { $addToSet: { likedVideos: idVideo } };
     try {
       var videoPiaciuto = new Promise((resolve, reject) => {
         User.updateOne(query, set, async(err, res) => {
@@ -55,7 +55,7 @@ class UserClass {
     let action = global.ID_ACTION_SHARE
     let query = { id: idUser }
     // traccio che l'utente ha condiviso questo video
-    let set = {$push: {sharedVideos: idVideo}};
+    let set = {$addToSet: {sharedVideos: idVideo}};
     try {
       var videoCondiviso = new Promise((resolve, reject) => {
         User.updateOne(query, set, async(err, res) => {
@@ -322,7 +322,7 @@ class UserClass {
             resolve(res)
         })
       })
-      res.send(await users)
+      res.json(await users)
     } catch (error) {
       console.log(error)
     }
