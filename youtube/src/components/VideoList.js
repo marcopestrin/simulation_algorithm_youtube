@@ -36,7 +36,6 @@ export default class VideoList extends Component {
       .then(response => response.json())
       .then(data => {
         this.setState({ ...this.state, userInfo: data })
-        console.log(data)
     });
   }
 
@@ -86,8 +85,8 @@ export default class VideoList extends Component {
       <>
         {this.state.lastVideos && this.state.lastVideos.map((element, index) => {
           return (
-            <>
-              <Card>
+            <div key={index}>
+              <Card key={index}>
                 <CardHeader
                   avatar={
                     <Avatar aria-label="recipe" className=''>
@@ -103,9 +102,9 @@ export default class VideoList extends Component {
                   subheader={new Date(element.dateAdded * 1000).toString()}
                 />
                 <CardMedia
-                  // className=''
-                  // image=""
-                  // title=""
+                  lastname='example'
+                  image="example"
+                  title="example"
                 />
                 <CardContent>
                   <Typography variant="body2" color="textSecondary" component="p">
@@ -116,24 +115,24 @@ export default class VideoList extends Component {
                     <CardActions disableSpacing> 
                       <IconButton aria-label="add to favorites" onClick={() => this.addLike(element.id)}>
                         <Badge badgeContent={element.like} color="primary">
-                          <FavoriteIcon color={this.state.userInfo.likedVideos.includes(element.id) ? 'error' : '' } />
+                          <FavoriteIcon color={this.state.userInfo.likedVideos.includes(element.id) ? 'error' : 'inherit' } />
                         </Badge>
                       </IconButton>
                       <IconButton aria-label="share" onClick={() => this.share(element.id)}>
                         <Badge badgeContent={element.share} color="primary">
-                          <ShareIcon color={this.state.userInfo.sharedVideos.includes(element.id) ? 'error' : '' } />
+                          <ShareIcon color={this.state.userInfo.sharedVideos.includes(element.id) ? 'error' : 'inherit' } />
                         </Badge>
                       </IconButton>
                       <IconButton aria-label="add comment" onClick={() => this.addComment(element.id)}>
                         <Badge badgeContent={element.comments} color="primary">
-                          <CommentIcon color={this.state.userInfo.commentedVideos.includes(element.id) ? 'error' : '' } />
+                          <CommentIcon color={this.state.userInfo.commentedVideos.includes(element.id) ? 'error' : 'inherit' } />
                         </Badge>
                       </IconButton>
                     </CardActions>
                   )}
               </Card>
               <br />
-            </>
+            </div>
           )
         })}
       </>
