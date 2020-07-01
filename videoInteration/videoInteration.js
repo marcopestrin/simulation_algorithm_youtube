@@ -7,23 +7,53 @@ class VideoInterationClass {
   constructor(){}
 
   async addLike(req, res) {
-    const { idVideo, idUser } = req.body
-    let query = { id: idVideo }
-    // aggiungo +1 al contatore dei mi piace
-    let set = { $inc: {
-      like: 1,
-      value: global.INCREMENT_VALUE_BY_LIKE
-    }}
     try {
-      var likeAggiunto = new Promise((resolve, reject) => {
-        Video.updateOne(query, set, async(err, res) => {
-          if (err) throw(err)
-          var result = {
-            likeAggiunto: res,
-            videoLiked: await user.videoLiked(idVideo, idUser)
-          }
-          resolve(result)
-        })
+      const { idVideo, idUser } = req.body
+      const videoLiked = await user.videoLiked(idVideo, idUser)
+      var likeAggiunto = new Promise(async(resolve, reject) => {
+        if (videoLiked.videoPiaciuto.nModified) {
+          let query = { id: idVideo }
+          // aggiungo +1 al contatore dei mi piace
+          let set = { $inc: {
+            like: 1,
+            value: global.INCREMENT_VALUE_BY_LIKE
+          }}
+          Video.updateOne(query, set, async(err, res) => {
+            if (err) throw(err)
+            var result = {
+              likeAggiunto: res,
+              videoLiked
+            }
+            resolve(result)
+          })
+        } else {
+          // il mi piace è già stato aggiunto in precedenza
+
+          // rimuovo sull'utenza l'id del video piaciuto
+          // il terzo parametro va a FALSE perchè sto rimuovendo
+          const videoUnliked = await user.videoLiked(idVideo, idUser, false)
+
+          let query = { id: idVideo }
+          // aggiungo -1 al contatore dei mi piace
+          let set = { $inc: {
+            like: -1,
+            value: global.INCREMENT_VALUE_BY_LIKE
+          }}
+          var likeRimosso = new Promise(async(resolve, reject) => {
+            Video.updateOne(query, set, async(err, res) => {
+              if (err) throw(err)
+              resolve({
+                likeRemoved: res,
+                videoUnliked
+              })
+            })
+          })
+          resolve({
+            likeAggiunto: false,
+            videoLiked,
+            likeRimosso: await likeRimosso
+          })
+        }
       })
       res.json(await likeAggiunto)
     } catch (error) {

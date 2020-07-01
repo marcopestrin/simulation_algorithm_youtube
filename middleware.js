@@ -23,7 +23,7 @@ module.exports = async(req, res, next) => {
 
     if(isEmptycollection.user && userToAdd) {
       var userAdded = new Promise((resolve, reject) => {
-        User.insertMany(userToAdd, function(error, result){
+        User.insertMany(userToAdd.user, function(error, result){
           if (error) throw(error)
           resolve(result)
         })

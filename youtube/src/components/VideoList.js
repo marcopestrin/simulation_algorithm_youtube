@@ -16,6 +16,10 @@ export default class VideoList extends Component {
 
   constructor(props) {
     super(props);
+    this.addLike = this.addLike.bind(this);
+    this.share = this.share.bind(this);
+    this.addComment = this.addComment.bind(this);
+    this.idUser = 5
     this.state = {
       lastVideos: null,
       userInfo: null,
@@ -30,7 +34,7 @@ export default class VideoList extends Component {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        idUser: 3
+        idUser: this.idUser
       })
     })
       .then(response => response.json())
@@ -42,7 +46,7 @@ export default class VideoList extends Component {
   addLike(idVideo){
     fetch("http://127.0.0.1:3000/addLike", {
       body: JSON.stringify({
-        idUser: 3,
+        idUser: this.idUser,
         idVideo: idVideo
       }),
       headers: { "Content-Type": "application/json" },
@@ -55,7 +59,7 @@ export default class VideoList extends Component {
   share(idVideo){
     fetch("http://127.0.0.1:3000/share", {
       body: JSON.stringify({
-        idUser: 3,
+        idUser: this.idUser,
         idVideo: idVideo
       }),  
       headers: {
@@ -70,7 +74,7 @@ export default class VideoList extends Component {
   addComment(idVideo) {
     fetch("http://127.0.0.1:3000/addComment", {
       body: JSON.stringify({
-        idUser: 3,
+        idUser: this.idUser,
         idVideo: idVideo
       }),
       method: "POST",

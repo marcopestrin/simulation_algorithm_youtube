@@ -28,18 +28,22 @@ class UserClass {
     }
   }
       
-  async videoLiked(idVideo, idUser) {
+  async videoLiked(idVideo, idUser, like = true) {
+    // il terzo parametro serve per capire se è like o unlike
+    // in caso di like non viene mai passato
+    // in caso di unlike viene passato FALSE
     let action = global.ID_ACTION_LIKE
     let query = { id: idUser }
     // traccio che a l'utente è piaciuto questo video
-    let set = { $addToSet: { likedVideos: idVideo } };
+    let set = like ? {$addToSet: {likedVideos:idVideo}} : {$pull: {likedVideos:idVideo}}
     try {
       var videoPiaciuto = new Promise((resolve, reject) => {
         User.updateOne(query, set, async(err, res) => {
           if (err) throw(err)
           let result = {
             videoPiaciuto: res,
-            impatto: await this.addImpact(idUser, idVideo, action)
+            // se non è stato aggiunto il mi piace l'utente non deve subire un impatto
+            impatto: res.nModified === 1 ? await this.addImpact(idUser, idVideo, action) : false
           }
           resolve(result)
         })
