@@ -50,4 +50,6 @@ module.exports = Object.freeze({
   COLLECTION_NAME_AUTHOR: 'author',
   COLLECTION_NAME_CATEGORY: 'category',
   DATABASE_NAME: 'youtube',
+
+  SECRET_KEY_TOKEN: 'thisIsMySecretKey',
 })  

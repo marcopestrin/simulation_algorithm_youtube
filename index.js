@@ -3,6 +3,7 @@ var express = require('express');
 var app = express();
 
 const interation = require('./videoInteration/videoInteration')
+const authentication = require('./authentication/authentication')
 const suggestion = require('./suggestion/suggestion')
 const helper = require('./helper')
 const user = require('./user/user')
@@ -29,6 +30,9 @@ app.post('/feedbackTimeWatched', interation.feedbackTimeWatched);
 app.post('/getSuggestedVideos', async(req, res) => {
   res.send(await suggestion.getSuggestedVideos(req.body.idUser))
 });
+app.post('/registration', authentication.registration);
+app.post('/login', authentication.login);
+// app.post('/logout', authentication.logout);
 
 app.listen(global.EXPRESS_PORT, function () {
   console.log('App listening on port '+ global.EXPRESS_PORT);

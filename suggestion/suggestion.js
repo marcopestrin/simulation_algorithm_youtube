@@ -90,7 +90,6 @@ class SuggestionClass {
     
   }
 }
-module.exports = SuggestionClass
 
 var suggestion = new SuggestionClass()
 module.exports = Object.freeze(suggestion)
