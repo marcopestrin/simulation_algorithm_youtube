@@ -9,8 +9,9 @@ const global = require('./const')
 
 module.exports = async(req, res, next) => {
   try {
-
-    jwt.verify(req.headers.token, global.SECRET_KEY_TOKEN)
+    if(req.path != '/registration' && req.path != '/login') {
+      jwt.verify(req.headers.token, global.SECRET_KEY_TOKEN)
+    }
 
     res.header("Access-Control-Allow-Origin", "*"); //no cors
     res.header(
@@ -53,8 +54,8 @@ module.exports = async(req, res, next) => {
       if (error) throw(error)
     })
     */
+    next()
   } catch(error) {
     res.json(error)
   }
-  next()
 }

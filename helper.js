@@ -21,7 +21,8 @@ class Helper {
       })
       return await findCategory
     } catch (error) {
-      console.log(error) 
+      console.log(error)
+      return error
     }
   }
 
@@ -45,6 +46,7 @@ class Helper {
       return parseInt(duration)
     } catch(error) {
       console.log(error)
+      return error
     }
   }
 
@@ -98,6 +100,7 @@ class Helper {
       return await videos
     } catch (error) {
       console.log(error)
+      return error
     }
   }
   
@@ -113,6 +116,7 @@ class Helper {
       return await videos
     } catch (error) {
       console.log(error)
+      return error
     }
   }
 
@@ -138,7 +142,7 @@ class Helper {
       res.json(await refreshed)
     } catch(error) {
       console.log(error)
-      return error
+      res.json(error)
     }
   }
 
@@ -164,7 +168,7 @@ class Helper {
       res.json(await isViral)
     } catch(error) {
       console.log(error)
-      return error
+      res.json(error)
     }
   }
   async sortCategoriesByImpact(idUser) {
@@ -187,6 +191,7 @@ class Helper {
       return await ordinamentoPerImpatto
     } catch(err) {
       console.log(err)
+      return err
     }
   }
   
@@ -210,6 +215,7 @@ class Helper {
       return await ordinamentoPerImpatto
     } catch(error) {
       console.log(error)
+      return error
     } 
   }
 
@@ -238,6 +244,7 @@ class Helper {
       }
     } catch(error) {
       console.log(error)
+      return error
     }
   }
 }

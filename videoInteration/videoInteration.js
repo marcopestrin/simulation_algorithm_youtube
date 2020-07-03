@@ -58,7 +58,7 @@ class VideoInterationClass {
       res.json(await likeAggiunto)
     } catch (error) {
       console.log(error)
-      return error
+      res.json(error)
     }
   }
   
@@ -84,7 +84,7 @@ class VideoInterationClass {
       res.json(await videoCondiviso)
     } catch (error) {
       console.log(error)
-      return error
+      res.json(error)
     }
   }
   
@@ -110,7 +110,7 @@ class VideoInterationClass {
       res.json(await commentoAggiunto)
     } catch(error) {
       console.log(error)
-      return error
+      res.json(error)
     }
   }
 
@@ -137,7 +137,7 @@ class VideoInterationClass {
       res.json(await riscontro)
     } catch(error) {
       console.log(error)
-      return error
+      res.json(error)
     }
   }
   
@@ -192,6 +192,7 @@ class VideoInterationClass {
       res.json(await videoList)
     } catch (error) {
       console.log(error)
+      res.json(error)
     }
   }
 }

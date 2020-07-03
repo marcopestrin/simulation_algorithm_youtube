@@ -329,6 +329,7 @@ class UserClass {
       res.json(await users)
     } catch (error) {
       console.log(error)
+      res.json(error)
     }
   }
 }
