@@ -6,28 +6,45 @@ class authenticationClass {
     async login(req, res) {
         try {
             const { email, password } = req.body
+            let response = {}
             const query = {
                 email,
                 password: safe.encrypt(password)
             }
-            User.findOne(query, async(error, result) => {
-                if (error) throw error
-                var response = {}
-                if (result === null) {
-                     response = {
-                        valid: false,
-                        comment: "user not found"
-                    }
-                } else {
-                    response = {
-                        valid: true,
-                        token: await token.generate(email, password), 
-                        result
-                    }
+            new Promise((resolve, reject) => {
+                // controllo che le credenziali siano corrette
+                User.findOne(query, async(error, result) => {
+                    if (error) throw error
+                    if (result === null) reject(true)
+                    if (result) resolve(result)
+                })
+            }).then(async() => {
+                // aggiorno il token
+                const _token = await token.generate(email, password)
+                var updateToken = new Promise((resolve, reject) => {
+                    var query = { email: email }
+                    var set = { $set: { token: _token }}
+                    User.updateOne(query, set, async(error, result) => {
+                        if (error) throw error
+                        resolve(result)
+                    })
+                })
+                await updateToken
+
+                response = {
+                    valid: true,
+                    email,
+                    token: _token,
                 }
+            }).catch((reason) =>{
+                response = {
+                    valid: false,
+                    email
+                }
+            }).finally(()=> {
                 res.json(response)
             })
-        } catch(e) {
+        } catch (e) {
             console.log(e)
         }
     }

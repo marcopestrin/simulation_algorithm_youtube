@@ -22,6 +22,7 @@ const userModel = new Schema({
   id: { type: Number, required: true },
   password: { type: String, required: true },
   email: { type: String, required: true },
+  token: {type: String, default: '' },
   favouriteCategories: { type: Array, required: true },
   favouriteChannels: { type: Array, required: true },
   likedVideos: { type: Array, default: [] },
