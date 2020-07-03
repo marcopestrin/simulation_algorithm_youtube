@@ -4,9 +4,13 @@ const videoToAdd = require("./video.json")
 const authorToAdd = require("./author.json")
 const categoryToAdd = require("./category.json")
 const helper = require('./helper')
+const jwt = require('jsonwebtoken')
+const global = require('./const')
 
 module.exports = async(req, res, next) => {
   try {
+
+    jwt.verify(req.headers.token, global.SECRET_KEY_TOKEN)
 
     res.header("Access-Control-Allow-Origin", "*"); //no cors
     res.header(
@@ -50,7 +54,7 @@ module.exports = async(req, res, next) => {
     })
     */
   } catch(error) {
-    console.log(error)
+    res.json(error)
   }
   next()
 }
