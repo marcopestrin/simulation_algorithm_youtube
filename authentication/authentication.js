@@ -5,6 +5,7 @@ const token = require('../token');
 class authenticationClass {
     async login(req, res) {
         try {
+            let idUser = 0
             const { email, password } = req.body
             let response = {}
             const query = {
@@ -16,6 +17,7 @@ class authenticationClass {
                 User.findOne(query, async(error, result) => {
                     if (error) throw error
                     if (result === null) reject(true)
+                    idUser = result.id
                     if (result) resolve(result)
                 })
             }).then(async() => {
@@ -33,8 +35,11 @@ class authenticationClass {
 
                 response = {
                     valid: true,
-                    email,
-                    token: _token,
+                    result: {
+                        email,
+                        idUser,
+                        token: _token,
+                    }
                 }
             }).catch((reason) =>{
                 response = {
@@ -75,7 +80,10 @@ class authenticationClass {
                     }
                     User.create(payload, async(error, result) => {
                         if (error) throw error
-                        res.json(result)
+                        res.json({
+                            valid: true,
+                            result
+                        })
                     })
                 }
             })

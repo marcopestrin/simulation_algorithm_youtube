@@ -12,29 +12,40 @@ import ShareIcon from '@material-ui/icons/Share';
 import CommentIcon from '@material-ui/icons/Comment';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Badge from '@material-ui/core/Badge';
+import { Redirect } from 'react-router'
+
 export default class VideoList extends Component { 
 
   constructor(props) {
-    super(props);
-    this.addLike = this.addLike.bind(this);
-    this.share = this.share.bind(this);
-    this.addComment = this.addComment.bind(this);
-    this.idUser = 5
-    this.state = {
-      lastVideos: null,
-      userInfo: null,
-    };
+    super(props)
+    this.addLike = this.addLike.bind(this)
+    this.share = this.share.bind(this)
+    this.getUserDetailsById = this.getUserDetailsById.bind(this)
+    this.logout = this.logout.bind(this)
+    this.getLastVideos = this.getLastVideos.bind(this)
+    this.addComment = this.addComment.bind(this)
+    // TO DO: da gestire this.props.location.state in caso undefined
+    if (this.props.location.state) {
+      const { idUser, token } = this.props.location.state
+      this.state = {
+        logout: false,
+        lastVideos: [],
+        userInfo: null,
+        idUser,
+        token,
+      };
+    }
   }
 
-  componentDidMount(){
-    fetch('http://127.0.0.1:3000/getLastVideos')
-      .then(response => response.json())
-      .then(data => this.setState({ ...this.state, lastVideos: data }));
+  getUserDetailsById() {
     fetch('http://127.0.0.1:3000/getUserDetailsById', {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "token": this.state.token
+      },
       body: JSON.stringify({
-        idUser: this.idUser
+        idUser: this.state.idUser
       })
     })
       .then(response => response.json())
@@ -42,51 +53,88 @@ export default class VideoList extends Component {
         this.setState({ ...this.state, userInfo: data })
     });
   }
-
+  getLastVideos(){
+    fetch('http://127.0.0.1:3000/getLastVideos', {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "token": this.state.token
+      },
+    })
+      .then(response => response.json())
+      .then(data => this.setState({ ...this.state, lastVideos: data }));
+  }
+  componentDidMount(){
+    this.getLastVideos()
+    this.getUserDetailsById()
+  }
   addLike(idVideo){
     fetch("http://127.0.0.1:3000/addLike", {
       body: JSON.stringify({
-        idUser: this.idUser,
+        idUser: this.state.idUser,
         idVideo: idVideo
       }),
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-    })
-      .then(response => response.json())
-      .then(data => console.log("liked: ", data));
-  }
-
-  share(idVideo){
-    fetch("http://127.0.0.1:3000/share", {
-      body: JSON.stringify({
-        idUser: this.idUser,
-        idVideo: idVideo
-      }),  
       headers: {
         "Content-Type": "application/json",
+        "token": this.state.token
       },
       method: "POST",
     })
       .then(response => response.json())
-      .then(data => console.log("shared: ", data));
+      .then(data => {
+        console.log("liked: ", data)
+        this.getUserDetailsById()
+      });
   }
-
+  share(idVideo){
+    fetch("http://127.0.0.1:3000/share", {
+      body: JSON.stringify({
+        idUser: this.state.idUser,
+        idVideo: idVideo
+      }),  
+      headers: {
+        "Content-Type": "application/json",
+        "token": this.state.token
+      },
+      method: "POST",
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log("shared: ", data)
+        this.getUserDetailsById()
+      });
+  }
   addComment(idVideo) {
     fetch("http://127.0.0.1:3000/addComment", {
       body: JSON.stringify({
-        idUser: this.idUser,
+        idUser: this.state.idUser,
         idVideo: idVideo
       }),
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "token": this.state.token
+      },
     })
       .then(response => response.json())
-      .then(data => console.log("commented: ", data));
+      .then(data => {
+        console.log("commented: ", data)
+        this.getUserDetailsById()
+      });
+  }
+  logout(){
+    this.setState({logout:true})
   }
   render () {
 
     return ( 
       <>
+        <span onClick={this.logout}>LOGOUT</span>
+        {this.state.logout && (
+          <Redirect to={{
+            pathname: '/login'
+          }} />
+        )}
         {this.state.lastVideos && this.state.lastVideos.map((element, index) => {
           return (
             <div key={index}>
