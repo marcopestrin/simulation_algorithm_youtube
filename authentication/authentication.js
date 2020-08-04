@@ -54,8 +54,6 @@ class authenticationClass {
         }
     }
     
-    // async logout(req, res) { }
-
     async registration(req, res) {
         try {
             const { id, email, password } = req.body

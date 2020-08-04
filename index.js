@@ -32,7 +32,6 @@ app.post('/getSuggestedVideos', async(req, res) => {
 });
 app.post('/registration', authentication.registration);
 app.post('/login', authentication.login);
-// app.post('/logout', authentication.logout);
 
 app.listen(global.EXPRESS_PORT, function () {
   console.log('App listening on port '+ global.EXPRESS_PORT);
