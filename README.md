@@ -1,37 +1,33 @@
-## Welcome to GitHub Pages
+# Installation
+npm install
+nodemon index.js
+cd youtube
+npm install
+npm start
 
-You can use the [editor on GitHub](https://github.com/marcopestrin/simulation_algorithm_youtube/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+# Logs
+Tipi di interazione:
+- condivisione del Video
+- mi piace al Video
+- commento al Video
+- tempo di visualizzazione del video
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+ogni interazione ha un peso differente che va a determinare
+quanto importante è quel canale e quella tipologia di video
+(in base alla categoria) su quel determinato utente iscritto.
 
-### Markdown
+viene fatta una preferenza sulle categorie e i canali in base
+alle interazione degli utenti.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+ogni video tiene conto pure di quante interazioni ha avuto
+in modo da creare un determiato hype in base alla viralità
+che sta subendo.
 
-```markdown
-Syntax highlighted code block
 
-# Header 1
-## Header 2
-### Header 3
+# To Fix
+- più azioni insieme se la categoria e/o canale sono nuovi, viene
+letta come dato non presente.
 
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/marcopestrin/simulation_algorithm_youtube/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+# To Do:
+- flag viralità
+- da mettere a cron hype
