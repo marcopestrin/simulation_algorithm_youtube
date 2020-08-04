@@ -31,3 +31,22 @@ letta come dato non presente.
 # To Do:
 - flag viralità
 - da mettere a cron hype
+- getSuggestedVideos: rimuovere doppioni
+
+# Firme body:
+## addLike
+- idVideo
+- idUser
+
+## share
+- idVideo
+- idUser
+
+## addComment
+- idVideo
+- idUser
+
+## feedbackTimeWatched
+- percentage
+- idVideo
+- idUser
