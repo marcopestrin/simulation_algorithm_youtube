@@ -12,9 +12,11 @@ export default class Login extends Component {
         super(props);
         this.logIn = this.logIn.bind(this)
         this.handleClose = this.handleClose.bind(this)
+        this.goToRegistration = this.goToRegistration.bind(this)
         this.state = {
             redirectToVideoList: false,
-            error: false
+            error: false,
+            goToRegistration: false
         }
     }
     handleClose() {
@@ -22,6 +24,12 @@ export default class Login extends Component {
             ...this.state,
             error: false,
             comment: ''
+        })
+    }
+    goToRegistration() {
+        this.setState({
+            ...this.state,
+            goToRegistration: true
         })
     }
     logIn(e) {
@@ -66,11 +74,17 @@ export default class Login extends Component {
                 idUser: this.state.idUser
             }
         }} />;
+    } else if (this.state.goToRegistration) {
+        // vai in pagina registrazione
+        return <Redirect to={{
+            pathname: '/registration',
+            state: {}
+        }} />;
     } else {
         // rimani in questa pagina
         return ( 
             <>
-                <Typography variant="h1">
+                <Typography variant="h4" className="titlePage">
                     Login
                 </Typography>
                 { this.state.error && (
@@ -93,23 +107,33 @@ export default class Login extends Component {
                     autoComplete="off"
                     onSubmit={this.logIn}
                 >
-                    <TextField
-                        id="email"
-                        label="Email"
-                    />
-                    <TextField
-                        id="password"
-                        label="Password"
-                        type="password"
-                    />
-                    <Button
-                        type="submit"
-                        variant="outlined">
-                        Log In
-                    </Button>
+                    <div className="itemForm">
+                        <TextField
+                            id="email"
+                            label="Email"
+                        />
+                    </div>
+                    <div className="itemForm">
+                        <TextField
+                            id="password"
+                            label="Password"
+                            type="password"
+                        />
+                    </div>
+                    <div className="itemForm">
+                        <Button
+                            className="submitButton"
+                            type="submit"
+                            variant="outlined">
+                            Log In
+                        </Button>
+                    </div>
 
                 </form>
-            
+                <Typography variant="h5" onClick={this.goToRegistration} className="changePage">
+                    No credentials? Register now!
+                </Typography>
+
             </>
         )
     }

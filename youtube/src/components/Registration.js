@@ -12,9 +12,10 @@ export default class Registration extends Component {
         super(props);
         this.signUp = this.signUp.bind(this)
         this.handleClose = this.handleClose.bind(this)
+        this.goToLogin = this.goToLogin.bind(this)
         this.state = {
             redirectToLogin: false,
-            error: false
+            error: false,
         }
     }
     handleClose() {
@@ -22,6 +23,12 @@ export default class Registration extends Component {
             ...this.state,
             error: false,
             comment: ''
+        })
+    }
+    goToLogin() {
+        this.setState({
+            ...this.state,
+            redirectToLogin: true,
         })
     }
     signUp(e) {
@@ -58,13 +65,13 @@ export default class Registration extends Component {
 
     render () {
         if (this.state.redirectToLogin) {
-            // cambio pagina
+            // vai in pagina login
             return <Redirect to='/login'/>;
         } else {
             // rimani in questa pagina
             return ( 
                 <>
-                    <Typography variant="h1">
+                    <Typography variant="h4" className="titlePage">
                         Registration
                     </Typography>
 
@@ -88,21 +95,31 @@ export default class Registration extends Component {
                         autoComplete="off"
                         onSubmit={this.signUp}
                     >
+                    <div className="itemForm">
                         <TextField
                             id="email"
                             label="Email"
                         />
+                    </div>
+                    <div className="itemForm">
                         <TextField
                             id="password"
                             label="Password"
                             type="password"
                         />
+                    </div>
+                    <div className="itemForm">
                         <Button
+                            className="submitButton"
                             type="submit"
                             variant="outlined">
                             Sign Up
                         </Button>
+                    </div>
                     </form>
+                    <Typography variant="h5" onClick={this.goToLogin} className="changePage">
+                        Already registered? Login now!
+                    </Typography>
                 </>
             )
         }

@@ -34,6 +34,8 @@ export default class VideoList extends Component {
         idUser,
         token,
       };
+    } else {
+      this.state = {}
     }
   }
 
@@ -129,7 +131,9 @@ export default class VideoList extends Component {
 
     return ( 
       <>
-        <span onClick={this.logout}>LOGOUT</span>
+        <Typography onClick={this.logout} variant="h4" className="forceToLogout">
+            Logout
+        </Typography>
         {this.state.logout && (
           <Redirect to={{
             pathname: '/login'
@@ -138,7 +142,7 @@ export default class VideoList extends Component {
         {this.state.lastVideos && this.state.lastVideos.map((element, index) => {
           return (
             <div key={index}>
-              <Card key={index}>
+              <Card key={index} className="cardVideo">
                 <CardHeader
                   avatar={
                     <Avatar aria-label="recipe" className=''>

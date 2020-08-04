@@ -1,0 +1,43 @@
+.background {
+    padding:20px;
+    height:100%;
+}
+body {
+    margin: 0;
+    background-color: #eee;
+}
+.containerPage {
+    background-color: #fff;
+    color: #999;
+    margin: 20px;
+    padding:15px;
+
+}
+h4.forceToLogout,
+h4.titlePage {
+    font-size: 25px;
+    font-weight: 300;
+    text-transform: uppercase;
+    line-height: 50px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 20px;    
+}
+h5.changePage {
+    font-weight: 100;
+    font-size: 15px;
+    text-transform: uppercase;
+    line-height: 50px;
+    cursor: pointer;
+}
+.submitButton {
+    position: relative;
+    top: 20px;
+}
+.itemForm {
+    display: inline-block;
+    margin-right:10px;
+}
+.cardVideo:first-child,
+.cardVideo {
+    background:#eee
+}
