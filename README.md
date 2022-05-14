@@ -1,3 +1,6 @@
+# REPOSITORY INIZIATA MA NON PIU' FINITA.
+# REPOSITORY NON MANTENUTA. SOLO BOZZA
+
 # Installation
 npm install
 nodemon index.js
